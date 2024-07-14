@@ -10,8 +10,9 @@ data class MstProduct (
     @Column(name="product_id")
     val id:Int,
 
-    @Column(name="property_id")
-    val propertyId:Int,
+    @ManyToOne
+    @JoinColumn(name = "property_id", nullable = false, foreignKey = ForeignKey(name="FK_ID_PROPERTY"))
+    val propertyId:MstPropertyType,
 
     @Column(name="product_address")
     val productAddress:String,
@@ -34,8 +35,9 @@ data class MstProduct (
     @Column(name="product_electricity")
     val productElectricity:Int,
 
-    @Column(name="status_id")
-    val statusId:Int,
+    @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false, foreignKey = ForeignKey(name="FK_ID_STATUS"))
+    val statusId:MstStatus,
 
     @Column(name="product_visit_count")
     val productVisitCount:Int,
