@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service
 
 @Service
 class UserImpl(
-    val roleRepository: RoleRepository,
     val userRepository: UserRepository
 ): UserService {
     override fun createUser(user: CreateUserRequest, role: MstRole): ResponseEntity<BaseResponse<CreateUserResponse>> {
@@ -33,6 +32,30 @@ class UserImpl(
                 data = CreateUserResponse(
                     username = user.username,
                     role = role
+                )
+            )
+        )
+    }
+
+    override fun getUser(userId: Int): ResponseEntity<BaseResponse<Any>> {
+        val user = userRepository.findById(userId)
+        if(user.isEmpty){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                BaseResponse(
+                    status = "F",
+                    message = "User not found",
+                    data = null
+                )
+            )
+        }
+
+        return ResponseEntity.ok().body(
+            BaseResponse(
+                status = "T",
+                message = "User found",
+                data = mapOf(
+                    Pair("username", user.get().username),
+                    Pair("role", user.get().idRole)
                 )
             )
         )

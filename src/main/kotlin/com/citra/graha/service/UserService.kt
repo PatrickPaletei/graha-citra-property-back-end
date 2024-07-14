@@ -8,4 +8,5 @@ import org.springframework.http.ResponseEntity
 
 interface UserService {
     fun createUser(user: CreateUserRequest, role: MstRole): ResponseEntity<BaseResponse<CreateUserResponse>>
+    fun getUser(userId: Int): ResponseEntity<BaseResponse<Any>>
 }
