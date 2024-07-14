@@ -1,0 +1,23 @@
+package com.citra.graha.controller
+
+import com.citra.graha.dto.request.AddRoleRequest
+import com.citra.graha.dto.response.BaseResponse
+import com.citra.graha.service.RoleService
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
+
+@RestController
+@RequestMapping("/api/role")
+class RoleController(
+    val roleService: RoleService
+) {
+
+    @PostMapping
+    fun addRole(@RequestBody role: AddRoleRequest): ResponseEntity<BaseResponse<Any>>{
+        println(role.roleName)
+        return roleService.addRole(role)
+    }
+}
