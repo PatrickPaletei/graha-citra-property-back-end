@@ -7,5 +7,6 @@ import org.springframework.boot.runApplication
 class CitraGrahaPropertyApplication
 
 fun main(args: Array<String>) {
+	println("asdsdasd")
 	runApplication<CitraGrahaPropertyApplication>(*args)
 }
