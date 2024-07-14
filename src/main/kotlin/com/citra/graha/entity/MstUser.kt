@@ -8,7 +8,7 @@ data class MstUser(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="user_id")
-    val userId: Int,
+    val userId: Int? = null,
 
     @Column(name = "username")
     val username: String,
