@@ -15,15 +15,17 @@ class ProductPhotoImpl(
     val productPhotoRepository: ProductPhotoRepository
 ): ProductPhotoService {
     override fun addPhoto(photo: AddPhotoRequest, idPhoto: MstProduct): ResponseEntity<BaseResponse<Any>> {
-        val photo = ProductPhoto(
-            productId = idPhoto,
-            base64Photo = photo.path
-        )
-        productPhotoRepository.save(photo)
+        photo.path.forEach { base64String ->
+            val productPhoto = ProductPhoto(
+                productId = idPhoto,
+                base64Photo = base64String
+            )
+            productPhotoRepository.save(productPhoto)
+        }
         return ResponseEntity.ok(
             BaseResponse(
                 status = "T",
-                message = "Photo added successfull"
+                message = "Photos added successfully"
             )
         )
     }
