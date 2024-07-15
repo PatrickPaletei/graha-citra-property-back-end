@@ -32,7 +32,8 @@ class UserImpl(
                 message = "User created",
                 data = CreateUserResponse(
                     username = user.username,
-                    role = role
+                    role = role,
+                    status = user.status
                 )
             )
         )
@@ -56,19 +57,29 @@ class UserImpl(
                 message = "User found",
                 data = CreateUserResponse(
                     username = user.get().username,
-                    role = user.get().idRole
+                    role = user.get().idRole,
+                    status = user.get().status
                 )
             )
         )
     }
 
     override fun loginUser(user: LoginUserRequest): ResponseEntity<BaseResponse<CreateUserResponse>> {
-        val user = userRepository.findByUsernameAndPassword(user.username, user.password)
-        if (user.isEmpty){
+        val userExist = userRepository.findByUsername(user.username)
+        if (userExist.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
                     status = "F",
                     message = "User not found",
+                    data = null
+                )
+            )
+        }
+        if (userExist.get().password != user.password){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Wrong password",
                     data = null
                 )
             )
@@ -78,8 +89,9 @@ class UserImpl(
                 status = "T",
                 message = "User logged in",
                 data = CreateUserResponse(
-                    username = user.get().username,
-                    role = user.get().idRole
+                    username = userExist.get().username,
+                    role = userExist.get().idRole,
+                    status = userExist.get().status
                 )
             )
         )
@@ -103,25 +115,16 @@ class UserImpl(
                 status = "T",
                 message = "User updated",
                 data = CreateUserResponse(
-                    username = user.username,
-                    role = role ?: user.idRole
+                    username = updatedUser.username,
+                    role = updatedUser.idRole,
+                    status = updatedUser.status
                 )
             )
         )
     }
 
-    override fun deleteUser(userId: Int): ResponseEntity<BaseResponse<Any>> {
-        val user = userRepository.findById(userId)
-        if(user.isEmpty){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                BaseResponse(
-                    status = "F",
-                    message = "User not found",
-                    data = null
-                )
-            )
-        }
-        val updatedUser = user.get().copy(
+    override fun deleteUser(user: MstUser): ResponseEntity<BaseResponse<Any>> {
+        val updatedUser = user.copy(
             status = "00"
         )
         userRepository.save(updatedUser)
@@ -150,7 +153,8 @@ class UserImpl(
             listUsers.add(
                 CreateUserResponse(
                     username = it.username,
-                    role = it.idRole
+                    role = it.idRole,
+                    status = it.status
                 )
             )
         }

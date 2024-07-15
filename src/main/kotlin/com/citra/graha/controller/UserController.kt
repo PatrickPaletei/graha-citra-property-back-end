@@ -1,6 +1,7 @@
 package com.citra.graha.controller
 
 import com.citra.graha.dto.request.CreateUserRequest
+import com.citra.graha.dto.request.DeleteRequest
 import com.citra.graha.dto.request.LoginUserRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.CreateUserResponse
@@ -26,6 +27,27 @@ class UserController(
                 BaseResponse(
                     status = "F",
                     message = "Make sure all parameter is not null",
+                    data = null
+                )
+            )
+        }
+        val existUsername = userRepository.findByUsername(user.username)
+        if (existUsername.isPresent){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Username is already exist",
+                    data = null
+                )
+            )
+        }
+        val existEmail = userRepository.findByEmail(user.email)
+
+        if (existEmail.isPresent){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Email is already exist",
                     data = null
                 )
             )
@@ -67,9 +89,18 @@ class UserController(
         return userService.loginUser(user)
     }
 
-    @PutMapping("/update/{id}")
-    fun updateUser(@PathVariable id: String, @RequestBody user: CreateUserRequest): ResponseEntity<BaseResponse<CreateUserResponse>>{
-        val existUser = userRepository.findById(Integer.valueOf(id))
+    @PutMapping
+    fun updateUser(@RequestBody user: CreateUserRequest): ResponseEntity<BaseResponse<CreateUserResponse>>{
+        if (user.id == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Please input the user id",
+                    data = null
+                )
+            )
+        }
+        val existUser = userRepository.findById(Integer.valueOf(user.id))
         if (existUser.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
@@ -78,6 +109,31 @@ class UserController(
                     data = null
                 )
             )
+        }
+        if (user.username != null && existUser.get().username != user.username){
+            val existUsername = userRepository.findByUsername(user.username)
+            if (existUsername.isPresent){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    BaseResponse(
+                        status = "F",
+                        message = "Username is already exist",
+                        data = null
+                    )
+                )
+            }
+        }
+
+        if(user.email != null && existUser.get().email != user.email){
+            val existEmail = userRepository.findByEmail(user.email)
+            if (existEmail.isPresent){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                    BaseResponse(
+                        status = "F",
+                        message = "Email is already exist",
+                        data = null
+                    )
+                )
+            }
         }
         if (user.status != null && (user.status != "01" && user.status != "00")){
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -104,9 +160,19 @@ class UserController(
         return userService.updateUser(existUser = existUser.get(), updateUser = user, null)
     }
 
-    @DeleteMapping("/{id}")
-    fun deleteUser(@PathVariable id: String): ResponseEntity<BaseResponse<Any>>{
-        return userService.deleteUser(Integer.valueOf(id))
+    @DeleteMapping
+    fun deleteUser(@RequestBody deleteRequest: DeleteRequest): ResponseEntity<BaseResponse<Any>>{
+        val user = userRepository.findById(deleteRequest.id)
+        if(user.isEmpty){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                BaseResponse(
+                    status = "F",
+                    message = "User not found",
+                    data = null
+                )
+            )
+        }
+        return userService.deleteUser(user.get())
     }
 
     @GetMapping("/{id}")

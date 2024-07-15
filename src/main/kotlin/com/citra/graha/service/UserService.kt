@@ -13,6 +13,6 @@ interface UserService {
     fun getUser(userId: Int): ResponseEntity<BaseResponse<CreateUserResponse>>
     fun loginUser(user: LoginUserRequest): ResponseEntity<BaseResponse<CreateUserResponse>>
     fun updateUser(existUser: MstUser,updateUser: CreateUserRequest, role: MstRole?): ResponseEntity<BaseResponse<CreateUserResponse>>
-    fun deleteUser(userId: Int): ResponseEntity<BaseResponse<Any>>
+    fun deleteUser(user: MstUser): ResponseEntity<BaseResponse<Any>>
     fun getAllUser(): ResponseEntity<BaseResponse<List<CreateUserResponse>>>
 }

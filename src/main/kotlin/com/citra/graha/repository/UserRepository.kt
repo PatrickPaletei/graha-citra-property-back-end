@@ -6,4 +6,6 @@ import java.util.*
 
 interface UserRepository: JpaRepository<MstUser, Int> {
     fun findByUsernameAndPassword(username: String, password: String): Optional<MstUser>
+    fun findByUsername(username: String): Optional<MstUser>
+    fun findByEmail(email: String): Optional<MstUser>
 }
