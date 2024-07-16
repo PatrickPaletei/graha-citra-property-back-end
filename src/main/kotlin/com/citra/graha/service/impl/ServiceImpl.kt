@@ -13,21 +13,10 @@ import org.springframework.stereotype.Service
 class ServiceImpl(
     val serviceRepository: ServiceRepository
 ) : ServiceService {
-    override fun addService(service: AddServiceRequest): ResponseEntity<BaseResponse<Any>> {
-        val existService = serviceRepository.findByServiceName(service.serviceName)
-        if (existService.isPresent) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                BaseResponse(
-                    status = "F",
-                    message = "Service already exist",
-                    data = null
-                )
-            )
-        }
-
+    override fun addService(service: AddServiceRequest): ResponseEntity<BaseResponse<MstService>> {
         val service = MstService(
-            serviceName = service.serviceName,
-            serviceDescription = service.serviceDescription
+            serviceName = service.serviceName.toString(),
+            serviceDescription = service.serviceDescription.toString()
         )
         serviceRepository.save(service)
         return ResponseEntity.ok(
@@ -35,6 +24,76 @@ class ServiceImpl(
                 status = "T",
                 message = "Success add service",
                 data = service
+            )
+        )
+    }
+
+    override fun getServiceById(id: Int): ResponseEntity<BaseResponse<MstService>> {
+        val service = serviceRepository.findById(id)
+        if (service.isEmpty){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Service not found",
+                    data = null
+                )
+            )
+        }
+        return ResponseEntity.ok(
+            BaseResponse(
+                status = "T",
+                message = "Get service by id",
+                data = service.get()
+            )
+        )
+    }
+
+    override fun getAllServices(): ResponseEntity<BaseResponse<List<MstService>>> {
+        val allServices = serviceRepository.findAll()
+        if (allServices.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                BaseResponse(
+                    status = "F",
+                    message = "No services found",
+                    data = null
+                )
+            )
+        }
+        return ResponseEntity.ok(
+            BaseResponse(
+                status = "T",
+                message = "Get all services",
+                data = allServices
+            )
+        )
+    }
+
+    override fun deleteService(service: MstService): ResponseEntity<BaseResponse<Any>> {
+        serviceRepository.delete(service)
+        return ResponseEntity.ok(
+            BaseResponse(
+                status = "T",
+                message = "Service deleted",
+                data = null
+            )
+        )
+    }
+
+    override fun updateService(
+        existService: MstService,
+        updateService: AddServiceRequest
+    ): ResponseEntity<BaseResponse<MstService>> {
+        val updatedService = existService.copy(
+            serviceName = updateService.serviceName ?: existService.serviceName,
+            serviceDescription = updateService.serviceDescription ?: existService.serviceDescription
+        )
+
+        serviceRepository.save(updatedService)
+        return ResponseEntity.ok(
+            BaseResponse(
+                status = "T",
+                message = "Service updated successfully",
+                data = updatedService
             )
         )
     }

@@ -1,6 +1,7 @@
 package com.citra.graha.dto.request
 
 data class AddServiceRequest(
-    val serviceName: String,
-    val serviceDescription: String,
+    val id: Int? = null,
+    val serviceName: String? = null,
+    val serviceDescription: String? = null,
 )

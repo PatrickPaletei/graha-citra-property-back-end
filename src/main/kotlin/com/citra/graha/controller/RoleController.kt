@@ -60,6 +60,16 @@ class RoleController(
                 )
             )
         }
+        val existRoleName = roleRepository.findByRoleName(updateRole.roleName)
+        if(existRoleName.isPresent){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Role name already exist",
+                    data = null
+                )
+            )
+        }
         val existRole = roleRepository.findById(Integer.valueOf(updateRole.id))
         if(existRole.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
