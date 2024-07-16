@@ -7,4 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface ProductPhotoRepository: JpaRepository<ProductPhoto, Int> {
+    fun findByProductId(productId: MstProduct): List<ProductPhoto>
 }
