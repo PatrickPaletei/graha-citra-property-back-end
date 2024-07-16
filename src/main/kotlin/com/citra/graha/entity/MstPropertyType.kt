@@ -8,7 +8,7 @@ data class MstPropertyType(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="property_id")
-    val propertyId: Int,
+    val propertyId: Int ?=null,
 
     @Column(name = "property_name")
     val propertyName: String
