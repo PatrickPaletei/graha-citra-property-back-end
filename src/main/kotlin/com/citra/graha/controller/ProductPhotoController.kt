@@ -3,7 +3,7 @@ package com.citra.graha.controller
 import com.citra.graha.dto.request.AddPhotoRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.PhotoResponse
-import com.citra.graha.repository.MstProductRepository
+import com.citra.graha.repository.ProductRepository
 import com.citra.graha.repository.ProductPhotoRepository
 import com.citra.graha.service.ProductPhotoService
 import org.springframework.http.HttpStatus
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.*
 class ProductPhotoController(
     val productPhotoService: ProductPhotoService,
     val productPhotoRepository: ProductPhotoRepository,
-    val mstProductRepository: MstProductRepository
+    val productRepository: ProductRepository
 ) {
     @PostMapping("/addProductPhoto")
     fun createProductPhoto(@RequestBody productPhoto: AddPhotoRequest): ResponseEntity<BaseResponse<Any>> {
 
-        val existProductId = mstProductRepository.findByProductId(productPhoto.productId)
+        val existProductId = productRepository.findByProductId(productPhoto.productId)
         if (existProductId.isEmpty) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
@@ -36,7 +36,7 @@ class ProductPhotoController(
     }
     @GetMapping("getPhoto/{productId}")
     fun getProductPhoto(@PathVariable productId: Int): ResponseEntity<BaseResponse<List<PhotoResponse>>> {
-        val photo = mstProductRepository.findByProductId(productId).get()
+        val photo = productRepository.findByProductId(productId).get()
         return productPhotoService.getPhotoByProductId(photo)
     }
 

@@ -4,8 +4,8 @@ import com.citra.graha.dto.request.UpdatePropertyTypeRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.PropertyTypeResponse
 import com.citra.graha.entity.MstPropertyType
-import com.citra.graha.repository.MstProductRepository
-import com.citra.graha.repository.MstPropertyTypeRepository
+import com.citra.graha.repository.ProductRepository
+import com.citra.graha.repository.PropertyTypeRepository
 import com.citra.graha.service.PropertyTypeService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*
 @RestController
 @RequestMapping("/api/propertyType")
 class PropertyTypeController(
-    val propertyTypeRepository: MstPropertyTypeRepository,
+    val propertyTypeRepository: PropertyTypeRepository,
     val propertyTypeService: PropertyTypeService,
-    val mstProductRepository: MstProductRepository
+    val productRepository: ProductRepository
 ) {
     @PostMapping("/addPropertyType/{propertyType}")
     fun addPropertyType(@PathVariable propertyType: String): ResponseEntity<BaseResponse<Any>> {
@@ -44,7 +44,7 @@ class PropertyTypeController(
             propertyId = propertyId,
             propertyName = ""
         )
-        val existInMstProperty = mstProductRepository.findByPropertyId(mstProperty)
+        val existInMstProperty = productRepository.findByPropertyId(mstProperty)
         val propertyType = propertyTypeRepository.findById(propertyId)
         if (propertyType.isEmpty) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(

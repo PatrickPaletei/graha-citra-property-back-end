@@ -2,10 +2,9 @@ package com.citra.graha.service.impl
 
 import com.citra.graha.dto.request.UpdatePropertyTypeRequest
 import com.citra.graha.dto.response.BaseResponse
-import com.citra.graha.dto.response.CreateUserResponse
 import com.citra.graha.dto.response.PropertyTypeResponse
 import com.citra.graha.entity.MstPropertyType
-import com.citra.graha.repository.MstPropertyTypeRepository
+import com.citra.graha.repository.PropertyTypeRepository
 import com.citra.graha.service.PropertyTypeService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -13,7 +12,7 @@ import org.springframework.stereotype.Service
 
 @Service
 class PropertyTypeImpl(
-    val propertyTypeRepository: MstPropertyTypeRepository
+    val propertyTypeRepository: PropertyTypeRepository
 ) : PropertyTypeService {
     override fun addPropertyType(propertyType: String): ResponseEntity<BaseResponse<Any>> {
         val propertyType = MstPropertyType(

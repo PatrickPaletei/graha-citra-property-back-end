@@ -8,7 +8,7 @@ data class MstStatus(
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="status_id")
-    val statusId: Int,
+    val statusId: Int ?= null,
 
     @Column(name="status_name")
     val statusName: String
