@@ -4,10 +4,12 @@ import com.citra.graha.dto.request.CreateUserRequest
 import com.citra.graha.dto.request.LoginUserRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.CreateUserResponse
+import com.citra.graha.dto.response.LoginResponse
 import com.citra.graha.entity.MstRole
 import com.citra.graha.entity.MstUser
 import com.citra.graha.repository.UserRepository
 import com.citra.graha.service.UserService
+import com.citra.graha.util.JWTGenerator
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -31,6 +33,7 @@ class UserImpl(
                 status = "T",
                 message = "User created",
                 data = CreateUserResponse(
+                    userId = user.userId!!,
                     username = user.username,
                     role = role,
                     status = user.status
@@ -56,6 +59,7 @@ class UserImpl(
                 status = "T",
                 message = "User found",
                 data = CreateUserResponse(
+                    userId = user.get().userId!!,
                     username = user.get().username,
                     role = user.get().idRole,
                     status = user.get().status
@@ -64,7 +68,7 @@ class UserImpl(
         )
     }
 
-    override fun loginUser(user: LoginUserRequest): ResponseEntity<BaseResponse<CreateUserResponse>> {
+    override fun loginUser(user: LoginUserRequest): ResponseEntity<BaseResponse<LoginResponse>> {
         val userExist = userRepository.findByUsername(user.username)
         if (userExist.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -84,14 +88,17 @@ class UserImpl(
                 )
             )
         }
+        val token = JWTGenerator().createJWT(userExist.get())
         return ResponseEntity.ok().body(
             BaseResponse(
                 status = "T",
                 message = "User logged in",
-                data = CreateUserResponse(
+                data = LoginResponse(
+                    userId = userExist.get().userId!!,
                     username = userExist.get().username,
                     role = userExist.get().idRole,
-                    status = userExist.get().status
+                    status = userExist.get().status,
+                    token = token
                 )
             )
         )
@@ -115,6 +122,7 @@ class UserImpl(
                 status = "T",
                 message = "User updated",
                 data = CreateUserResponse(
+                    userId = updatedUser.userId!!,
                     username = updatedUser.username,
                     role = updatedUser.idRole,
                     status = updatedUser.status
@@ -152,6 +160,7 @@ class UserImpl(
         allUsers.forEach{
             listUsers.add(
                 CreateUserResponse(
+                    userId = it.userId!!,
                     username = it.username,
                     role = it.idRole,
                     status = it.status

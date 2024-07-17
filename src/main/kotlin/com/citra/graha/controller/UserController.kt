@@ -5,12 +5,18 @@ import com.citra.graha.dto.request.DeleteRequest
 import com.citra.graha.dto.request.LoginUserRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.CreateUserResponse
+import com.citra.graha.dto.response.LoginResponse
+import com.citra.graha.entity.MstUser
 import com.citra.graha.repository.RoleRepository
 import com.citra.graha.repository.UserRepository
 import com.citra.graha.service.UserService
+import com.citra.graha.util.JWTGenerator
+import com.google.gson.Gson
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import kotlin.reflect.typeOf
+
 
 @RestController
 @RequestMapping("/api/auth/user")
@@ -75,7 +81,7 @@ class UserController(
     }
 
     @PostMapping("/login")
-    fun loginUser(@RequestBody user: LoginUserRequest): ResponseEntity<BaseResponse<CreateUserResponse>>{
+    fun loginUser(@RequestBody user: LoginUserRequest): ResponseEntity<BaseResponse<LoginResponse>>{
         if(user.username == null || user.password == null)
         {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
@@ -176,9 +182,18 @@ class UserController(
     }
 
     @GetMapping("/{id}")
-    fun getUser(@PathVariable id: String): ResponseEntity<BaseResponse<CreateUserResponse>>{
-        // pengecekan token
-        return userService.getUser(Integer.valueOf(id))
+    fun getUser(@PathVariable id: Int, @RequestHeader("token") token: String): ResponseEntity<BaseResponse<CreateUserResponse>>{
+        val claim = JWTGenerator().decodeJWT(token)
+        if (claim["user_id"] != id){
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Unauthorized",
+                    data = null
+                )
+            )
+        }
+        return userService.getUser(id)
     }
 
     @GetMapping("/allusers")
@@ -186,3 +201,4 @@ class UserController(
         return userService.getAllUser()
     }
 }
+
