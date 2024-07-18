@@ -7,18 +7,23 @@ import com.citra.graha.entity.MstPropertyType
 import com.citra.graha.repository.ProductRepository
 import com.citra.graha.repository.PropertyTypeRepository
 import com.citra.graha.service.PropertyTypeService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/api/propertyType")
+@Tag(name = "Property Type API", description = "API for managing Property Type")
 class PropertyTypeController(
     val propertyTypeRepository: PropertyTypeRepository,
     val propertyTypeService: PropertyTypeService,
     val productRepository: ProductRepository
 ) {
     @PostMapping("/addPropertyType/{propertyType}")
+    @Operation(summary = "Create Property Type",
+        description = "buat nambahin Property Type ")
     fun addPropertyType(@PathVariable propertyType: String): ResponseEntity<BaseResponse<Any>> {
         val existPropertyType = propertyTypeRepository.findByPropertyNameIgnoreCase(propertyType)
         if (existPropertyType.isPresent) {
@@ -34,11 +39,14 @@ class PropertyTypeController(
     }
 
     @GetMapping("/getAllPropertyType")
+    @Operation(summary = "Get All Property Type", description = "buat ambil semua Property Type")
     fun getAllPropertyTypes(): ResponseEntity<BaseResponse<List<PropertyTypeResponse>>> {
         return propertyTypeService.getPropertyTypes()
     }
 
     @DeleteMapping("/removePropertyType/{propertyId}")
+    @Operation(summary = "Delete Property Type",
+        description = "buat hapus Property Type")
     fun removePropertyTypes(@PathVariable propertyId: Int): ResponseEntity<BaseResponse<Any>> {
         val mstProperty = MstPropertyType(
             propertyId = propertyId,
@@ -68,6 +76,7 @@ class PropertyTypeController(
     }
 
     @PutMapping("/updatePropertyType")
+    @Operation(summary = "Update Property Type")
     fun updatePropertyType(@RequestBody newPropertyName: UpdatePropertyTypeRequest): ResponseEntity<BaseResponse<Any>> {
         val existPropertyName = propertyTypeRepository.findById(Integer.valueOf(newPropertyName.propertyId))
         val currentPropertyName = propertyTypeRepository.findByPropertyNameIgnoreCase(newPropertyName.propertyName)

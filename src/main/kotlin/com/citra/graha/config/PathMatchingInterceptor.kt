@@ -12,6 +12,12 @@ class PathMatchingInterceptor(
         registry.addInterceptor(authInterceptor).excludePathPatterns(
             "/api/auth/user/login",
             "/api/auth/user/register",
+            "/swagger-ui.html",
+            "/swagger-ui/**",           // Exclude Swagger UI static resources
+            "/v3/api-docs/**",           // Exclude OpenAPI docs
+            "/swagger-resources/**",     // Exclude Swagger resources
+            "/configuration/**",         // Exclude Swagger configuration
+            "/webjars/**"
         )
     }
 }

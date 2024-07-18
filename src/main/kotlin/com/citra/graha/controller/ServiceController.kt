@@ -6,6 +6,12 @@ import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.entity.MstService
 import com.citra.graha.repository.ServiceRepository
 import com.citra.graha.service.ServiceService
+import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -19,14 +25,65 @@ import org.springframework.web.bind.annotation.RestController
 
 @RestController
 @RequestMapping("/api/service")
+@Tag(name = "Service API", description = "API for managing service")
 class ServiceController(
     val serviceService: ServiceService,
     val serviceRepository: ServiceRepository
 ) {
 
     @PostMapping
+    @Operation(
+        summary = "Create New Service",
+        description = "buat nambahin service",
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    examples = [
+                        ExampleObject(
+                            name = "Add service Request Example",
+                            value = """
+                                {
+                                    "serviceName": "Buat Kos",
+                                    "serviceDescription": "Jasa Buat kos"
+                                }
+                            """
+                        )
+                    ]
+                )
+            ]
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "OK",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponse::class),
+                        examples = [
+                            ExampleObject(
+                                name = "Add Service Response Example",
+                                value = """
+                                    {
+                                        "status": "T",
+                                        "message": "Success add service",
+                                        "data": {
+                                            "idService": 2,
+                                            "serviceName": "Buat Kos",
+                                            "serviceDescription": "Jasa Buat Kos"
+                                        }
+}
+                                """
+                            )
+                        ]
+                    )
+                ]
+            )
+        ]
+    )
     fun addService(@RequestBody service: AddServiceRequest): ResponseEntity<BaseResponse<MstService>> {
-        if (service.serviceName == null || service.serviceDescription == null){
+        if (service.serviceName == null || service.serviceDescription == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 BaseResponse(
                     status = "F",
@@ -49,19 +106,22 @@ class ServiceController(
     }
 
     @GetMapping("/{id}")
-    fun getServiceById(@PathVariable id: String): ResponseEntity<BaseResponse<MstService>>{
+    @Operation(summary = "Get Service by id", description = "buat get service pake id")
+    fun getServiceById(@PathVariable id: String): ResponseEntity<BaseResponse<MstService>> {
         return serviceService.getServiceById(Integer.valueOf(id))
     }
 
     @GetMapping("/allservices")
-    fun getAllServices(): ResponseEntity<BaseResponse<List<MstService>>>{
+    @Operation(summary = "Get ALl Service", description = "buat get all service")
+    fun getAllServices(): ResponseEntity<BaseResponse<List<MstService>>> {
         return serviceService.getAllServices()
     }
 
     @DeleteMapping
-    fun deleteService(@RequestBody deleteRequest: DeleteRequest): ResponseEntity<BaseResponse<Any>>{
+    @Operation(summary = "Delete Service", description = "buat delete service")
+    fun deleteService(@RequestBody deleteRequest: DeleteRequest): ResponseEntity<BaseResponse<Any>> {
         val service = serviceRepository.findById(deleteRequest.id)
-        if (service.isEmpty){
+        if (service.isEmpty) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
                     status = "F",
@@ -74,8 +134,9 @@ class ServiceController(
     }
 
     @PutMapping
-    fun updateService(@RequestBody service: AddServiceRequest): ResponseEntity<BaseResponse<MstService>>{
-        if (service.id == null){
+    @Operation(summary = "Update Service", description = "buat update service")
+    fun updateService(@RequestBody service: AddServiceRequest): ResponseEntity<BaseResponse<MstService>> {
+        if (service.id == null) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 BaseResponse(
                     status = "F",
@@ -85,9 +146,9 @@ class ServiceController(
             )
         }
         val existService = serviceRepository.findById(Integer.valueOf(service.id))
-        if (service.serviceName != null && existService.get().serviceName != service.serviceName){
+        if (service.serviceName != null && existService.get().serviceName != service.serviceName) {
             val existName = serviceRepository.findByServiceName(service.serviceName)
-            if (existName.isPresent){
+            if (existName.isPresent) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     BaseResponse(
                         status = "F",
@@ -97,7 +158,7 @@ class ServiceController(
                 )
             }
         }
-        if (existService.isEmpty){
+        if (existService.isEmpty) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
                     status = "F",
