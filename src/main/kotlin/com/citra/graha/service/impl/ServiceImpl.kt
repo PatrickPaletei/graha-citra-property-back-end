@@ -1,6 +1,7 @@
 package com.citra.graha.service.impl
 
 import com.citra.graha.dto.request.AddServiceRequest
+import com.citra.graha.dto.request.UpdateServiceRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.entity.MstService
 import com.citra.graha.repository.ServiceRepository
@@ -81,7 +82,7 @@ class ServiceImpl(
 
     override fun updateService(
         existService: MstService,
-        updateService: AddServiceRequest
+        updateService: UpdateServiceRequest
     ): ResponseEntity<BaseResponse<MstService>> {
         val updatedService = existService.copy(
             serviceName = updateService.serviceName ?: existService.serviceName,
