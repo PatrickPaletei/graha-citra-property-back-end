@@ -14,6 +14,9 @@ data class ProductPhoto(
     @JoinColumn(name = "product_id", nullable = false, foreignKey = ForeignKey(name="FK_ID_PRODUCT"))
     val productId: MstProduct,
 
-    @Column(name="base64_photo")
-    val base64Photo: String
+    @Column(name="file_path")
+    val filePath: String,
+
+    @Column(name="file_name")
+    val fileName: String
 )
