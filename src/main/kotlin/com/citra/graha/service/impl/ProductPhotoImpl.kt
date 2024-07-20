@@ -1,6 +1,8 @@
 package com.citra.graha.service.impl
 
+import com.citra.graha.dto.DeletePhotoDto
 import com.citra.graha.dto.response.BaseResponse
+import com.citra.graha.dto.response.DeleteResponse
 import com.citra.graha.dto.response.PhotoResponse
 import com.citra.graha.entity.MstProduct
 import com.citra.graha.entity.ProductPhoto
@@ -9,8 +11,6 @@ import com.citra.graha.service.ProductPhotoService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
-import org.springframework.core.io.UrlResource
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
@@ -21,7 +21,6 @@ import java.nio.file.Path
 import java.nio.file.Paths
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
 
 @Service
 class ProductPhotoImpl(
@@ -107,8 +106,30 @@ class ProductPhotoImpl(
         return ResponseEntity.ok(BaseResponse("T", "Photos retrieved successfully", photoResponses))
     }
 
+    override fun checkPhotosExist(productList: List<ProductPhoto>): DeletePhotoDto{
+        val listIds = mutableListOf<Int>()
+        val listPath = mutableListOf<Path>()
+        productList.forEach { photo ->
+            val photoExist = productPhotoRepository.findById(photo.productPhotoId!!)
+            val filePath = Paths.get(photoExist.get().filePath)
+            listIds.add(photo.productPhotoId)
+            listPath.add(filePath)
+            if (photoExist.isEmpty && !Files.exists(filePath)){
+                return DeletePhotoDto(
+                    canDelete = false,
+                    listPhotoId = null,
+                    listPhotoPath = null
+                )
+            }
+        }
+        return DeletePhotoDto(
+            canDelete = true,
+            listPhotoId = listIds,
+            listPhotoPath = listPath
+        )
+    }
 
-    override fun deletePhoto(idProductPhoto: Int): ResponseEntity<BaseResponse<Any>> {
+    override fun deletePhoto(idProductPhoto: Int): DeleteResponse {
         val photo = productPhotoRepository.findById(idProductPhoto)
         return try {
             val productPhoto = photo.get()
@@ -117,32 +138,46 @@ class ProductPhotoImpl(
             if (Files.exists(filePath)) {
                 Files.delete(filePath)
             } else {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    BaseResponse(
-                        status = "F",
-                        message = "File not found",
-                        data = null
-                    )
+                DeleteResponse(
+                    statusCode = HttpStatus.NOT_FOUND,
+                    statusString = "F",
+                    message = "File not found"
                 )
+//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+//                    BaseResponse(
+//                        status = "F",
+//                        message = "File not found",
+//                        data = null
+//                    )
+//                )
             }
-
             productPhotoRepository.delete(productPhoto)
+            DeleteResponse(
+                statusCode = HttpStatus.OK,
+                statusString = "T",
+                message = "Photo deleted successfully"
+            )
 
-            ResponseEntity.ok(
-                BaseResponse(
-                    status = "T",
-                    message = "Photo deleted successfully",
-                    data = null
-                )
-            )
+//            ResponseEntity.ok(
+//                BaseResponse(
+//                    status = "T",
+//                    message = "Photo deleted successfully",
+//                    data = null
+//                )
+//            )
         } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-                BaseResponse(
-                    status = "F",
-                    message = "Failed to delete photo",
-                    data = null
-                )
+            DeleteResponse(
+                statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
+                statusString = "F",
+                message = "Failed to delete photo"
             )
+//            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
+//                BaseResponse(
+//                    status = "F",
+//                    message = "Failed to delete photo",
+//                    data = null
+//                )
+//            )
         }
     }
 

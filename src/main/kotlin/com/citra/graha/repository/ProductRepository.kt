@@ -8,6 +8,6 @@ import java.util.*
 
 interface ProductRepository : JpaRepository<MstProduct, Int> {
     fun findByProductId(id: Int): Optional<MstProduct>
-    fun findByPropertyId(propertyId: MstPropertyType): Optional<MstProduct>
-    fun findByStatusId(status: MstStatus): Optional<MstProduct>
+    fun findByPropertyId(propertyId: MstPropertyType): List<MstProduct>
+    fun findByStatusId(status: MstStatus): List<MstProduct>
 }

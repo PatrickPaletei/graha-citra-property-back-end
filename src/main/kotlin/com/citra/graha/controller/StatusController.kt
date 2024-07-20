@@ -61,7 +61,7 @@ class StatusController(
                 )
             )
         }
-        if (existInMstProperty.isPresent) {
+        if (existInMstProperty.isNotEmpty()) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
                 BaseResponse(
                     status = "F",

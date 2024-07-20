@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
-@RequestMapping("/api/product")
+@RequestMapping("/api/productPhoto")
 @Tag(name = "Product Photo API", description = "API for managing photo")
 class ProductPhotoController(
     val productPhotoService: ProductPhotoService,
@@ -76,6 +76,12 @@ class ProductPhotoController(
                 )
             )
         }
-        return productPhotoService.deletePhoto(photo.get().productPhotoId!!)
+        val deleteReturn = productPhotoService.deletePhoto(photo.get().productPhotoId!!)
+        return ResponseEntity.status(deleteReturn.statusCode).body(
+            BaseResponse(
+                status = deleteReturn.statusString,
+                message = deleteReturn.message
+            )
+        )
     }
 }

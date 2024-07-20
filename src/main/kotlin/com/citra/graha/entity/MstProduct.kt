@@ -8,7 +8,7 @@ data class MstProduct (
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name="product_id")
-    val productId:Int,
+    val productId:Int? = null,
 
     @ManyToOne
     @JoinColumn(name = "property_id", nullable = false, foreignKey = ForeignKey(name="FK_ID_PROPERTY"))
