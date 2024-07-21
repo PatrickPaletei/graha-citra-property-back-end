@@ -12,7 +12,12 @@ import com.citra.graha.repository.PropertyTypeRepository
 import com.citra.graha.repository.StatusRepository
 import com.citra.graha.service.ProductPhotoService
 import com.citra.graha.service.ProductService
+import com.citra.graha.util.ApiDocumentation
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
 import org.springframework.http.HttpStatus
@@ -43,7 +48,20 @@ class ProductController(
     val log = LoggerFactory.getLogger(this::class.java)
 
     @PostMapping
-    @Operation(summary = "Create product", description = "buat nambahin product")
+    @Operation(summary = "Create product", description = "buat nambahin product",
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    examples = [
+                        ExampleObject(
+                            name = "All fields cannot be null",
+                            value = ApiDocumentation.Request.ADD_PRODUCT_REQUEST_EXAMPLE
+                        )
+                    ]
+                )
+            ]
+        ))
     fun addProduct(@RequestBody addProductRequest: AddProductRequest): ResponseEntity<BaseResponse<MstProduct>>{
         val status = statusRepository.findById(addProductRequest.statusId!!)
         if (status.isEmpty){
@@ -69,7 +87,7 @@ class ProductController(
 
     @DeleteMapping("/{idProduct}")
     @Operation(summary = "Delete product", description = "Menghapus product berdasarkan id")
-    fun deleteProduct(@PathVariable idProduct: Int): ResponseEntity<BaseResponse<Any>>{
+    fun deleteProduct(@Parameter(description = "id of the product to be deleted") @PathVariable idProduct: Int): ResponseEntity<BaseResponse<Any>>{
         val existProduct = productRepository.findById(idProduct)
         if (existProduct.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -96,12 +114,6 @@ class ProductController(
             )
         }
         productPhotoRepository.deleteByIds(photoToDelete.listPhotoId!!)
-//        log.info(listPhoto.toString())
-//        photoToDelete.listPhotoId!!.forEach { photo ->
-//            println("try delete $photo")
-//            val x = productPhotoService.deletePhoto(photo)
-//            println("x: ${x.message}")
-//        }
         photoToDelete.listPhotoPath!!.forEach { photoPath ->
             if (Files.exists(photoPath)) {
                 Files.delete(photoPath)
@@ -118,12 +130,12 @@ class ProductController(
 
     @GetMapping("/{idProduct}")
     @Operation(summary = "Get product by id", description = "Mendapatkan product berdasarkan id")
-    fun getProductById(@PathVariable idProduct: Int): ResponseEntity<BaseResponse<MstProduct>>{
+    fun getProductById(@Parameter(description = "id of the product to be fetch", required = true) @PathVariable idProduct: Int): ResponseEntity<BaseResponse<MstProduct>>{
         return productService.getById(idProduct)
     }
 
     @GetMapping("/propertyType")
-    @Operation(summary = "Get product by property type name", description = "Mendapatkan product berdasarkan property type name atau property type id")
+    @Operation(summary = "Get product by property type name", description = "\"To get by propertyType you should put propertyTypeName or propertyTypeId, one of the value cannot be null or empty.")
     fun getByPropertyType(@RequestParam(name = "propertyTypeName", defaultValue = "") propertyTypeName: String,
                           @RequestParam(name = "propertyTypeId", defaultValue = "") propertyTypeId: String): ResponseEntity<BaseResponse<List<MstProduct>>>{
         if ("" == propertyTypeName && "" == propertyTypeId){
@@ -171,7 +183,31 @@ class ProductController(
     }
 
     @PutMapping
-    @Operation(summary = "update product", description = "Melakukan update data pada Product")
+    @Operation(summary = "update product", description = "Melakukan update data pada Product",
+        requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = [
+                Content(
+                    mediaType = "application/json",
+                    examples = [
+                        ExampleObject(
+                            name = "Product update request example",
+                            description = "id is a must, fields other than id can be null",
+                            value = ApiDocumentation.Request.UPDATE_PRODUCT_REQUEST_EXAMPLE
+                        ),
+                        ExampleObject(
+                            name = "Product status update request example",
+                            description = "id is a must",
+                            value = ApiDocumentation.Request.UPDATE_PRODUCT_STATUS_REQUEST_EXAMPLE
+                        ),
+                        ExampleObject(
+                            name = "Update some fields",
+                            description = "id is a must",
+                            value = ApiDocumentation.Request.UPDATE_PRODUCT_SOME_FIELDS_REQUEST_EXAMPLE
+                        ),
+                    ]
+                )
+            ]
+        ))
     fun updateProduct(@RequestBody productData: UpdateProductRequest): ResponseEntity<BaseResponse<MstProduct>>{
         var existsPropertyType: Optional<MstPropertyType>? = null
         var existsStatus: Optional<MstStatus>? = null

@@ -1,6 +1,7 @@
 package com.citra.graha.entity
 
 import jakarta.persistence.*
+import java.time.Instant
 
 @Entity
 @Table(name="mst_product")
@@ -41,4 +42,13 @@ data class MstProduct (
 
     @Column(name="product_visit_count")
     val productVisitCount:Int,
+
+    @Column(name = "dt_updated")
+    val dtUpdated: Instant,
+
+    @Column(name = "dt_sold")
+    val dtSold: Instant?,
+
+    @Column(name = "dt_added")
+    val dtAdded: Instant
 )

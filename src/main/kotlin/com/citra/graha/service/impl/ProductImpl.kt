@@ -13,6 +13,7 @@ import com.citra.graha.service.ProductService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
+import java.time.Instant
 
 @Service
 class ProductImpl(
@@ -31,7 +32,10 @@ class ProductImpl(
             productLuasTanah = product.productLuasTanah,
             propertyId = propertyType,
             productBedroom = product.productBedroom,
-            statusId = status
+            statusId = status,
+            dtAdded = Instant.now(),
+            dtUpdated = Instant.now(),
+            dtSold = null
         )
         productRepository.save(mstProduct)
         return ResponseEntity.ok(
@@ -204,6 +208,13 @@ class ProductImpl(
         propertyType: MstPropertyType?,
         status: MstStatus?
     ): ResponseEntity<BaseResponse<MstProduct>> {
+        // what ID shows that the product has been sold?
+        // let's say SOLD = 1
+        var dtSold: Instant? = null
+        if (status != null && status.statusId == 1){
+            dtSold = Instant.now()
+        }
+
         val updatedProduct = existProduct.copy(
             productAddress = product.productAddress ?: existProduct.productAddress,
             productBedroom = product.productBedroom ?: existProduct.productBedroom,
@@ -214,7 +225,9 @@ class ProductImpl(
             productLuasBangunan = product.productLuasBangunan ?: existProduct.productLuasBangunan,
             productElectricity = product.productElectricity ?: existProduct.productElectricity,
             statusId = status ?: existProduct.statusId,
-            productVisitCount = product.productVisitCount ?: existProduct.productVisitCount
+            productVisitCount = product.productVisitCount ?: existProduct.productVisitCount,
+            dtUpdated = Instant.now(),
+            dtSold = dtSold ?: existProduct.dtSold
         )
         productRepository.save(updatedProduct)
         return ResponseEntity.ok(

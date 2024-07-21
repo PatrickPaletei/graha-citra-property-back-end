@@ -10,5 +10,5 @@ data class AddProductRequest(
     val productLuasBangunan:Float,
     val productElectricity:Int,
     val statusId: Int,
-    val productVisitCount:Int,
+    val productVisitCount:Int = 0,
 )

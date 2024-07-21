@@ -40,7 +40,7 @@ class ServiceController(
                     examples = [
                         ExampleObject(
                             name = "Add service Request Example",
-                            value = ApiDocumentation.ADD_SERVICE_REQUEST_EXAMPLE
+                            value = ApiDocumentation.Request.ADD_SERVICE_REQUEST_EXAMPLE
                         )
                     ]
                 )
