@@ -13,7 +13,7 @@ import org.springframework.web.servlet.HandlerInterceptor
 @Component
 class AuthInterceptor: HandlerInterceptor {
     override fun preHandle(request: HttpServletRequest, response: HttpServletResponse, handler: Any): Boolean {
-        val token = request.getHeader("token")
+        val token = request.getHeader("Authorization")?.removePrefix("Bearer ")
 
         if(token == null){
             val body: BaseResponse<String> = BaseResponse(
