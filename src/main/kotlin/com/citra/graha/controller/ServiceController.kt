@@ -6,6 +6,7 @@ import com.citra.graha.dto.request.UpdateServiceRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.entity.MstService
 import com.citra.graha.repository.ServiceRepository
+import com.citra.graha.repository.WorkExperienceRepository
 import com.citra.graha.service.ServiceService
 import com.citra.graha.util.ApiDocumentation
 import io.swagger.v3.oas.annotations.Operation
@@ -28,7 +29,8 @@ import org.springframework.web.bind.annotation.RestController
 @Tag(name = "Service API", description = "API for managing service")
 class ServiceController(
     val serviceService: ServiceService,
-    val serviceRepository: ServiceRepository
+    val serviceRepository: ServiceRepository,
+    val workExperienceRepository: WorkExperienceRepository
 ) {
 
     @PostMapping("/addService")
@@ -90,6 +92,17 @@ class ServiceController(
                 BaseResponse(
                     status = "F",
                     message = "Service not found",
+                    data = null
+                )
+            )
+        }
+
+        val existInWorkExperience = workExperienceRepository.findByServiceId(service.get())
+        if (existInWorkExperience.isNotEmpty()){
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Service with id ${deleteRequest.id} is used",
                     data = null
                 )
             )
