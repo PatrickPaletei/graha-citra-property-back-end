@@ -1,13 +1,13 @@
 # Stage 1: Build the application
 FROM maven:3.8.7-eclipse-temurin-17 AS build
-COPY . /home/app
-WORKDIR /home/app
+COPY . /root/graha-citra-property-back-end
+WORKDIR /root/graha-citra-property-back-end/
 RUN mvn clean package -DskipTests
 
 # Stage 2: Package the application
 FROM eclipse-temurin:17-jre-alpine
 EXPOSE 5123
-COPY --from=build /home/app/target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=build /root/graha-citra-property-back-end/target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar app.jar
 
 # Set environment variables
 ENV SPRING_APPLICATION_NAME=Citra-Graha-Property \
