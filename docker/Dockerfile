@@ -13,7 +13,7 @@ COPY ../pom.xml ./
 COPY ../src ./src
 
 # Package the application (skip tests if necessary)
-RUN ./mvnw package && java -jar target/gs-spring-boot-docker-0.1.0.jar
+RUN ./mvnw package && java -jar target/gs-spring-boot-docker-0.1.0.jar -DskipTests
 
 # Copy the built JAR file to the container
 COPY target/*.jar app.jar
