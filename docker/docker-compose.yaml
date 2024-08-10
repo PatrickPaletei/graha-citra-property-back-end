@@ -15,7 +15,7 @@ services:
   springboot-app:
     build:
       context: .
-      dockerfile: docker/Dockerfile  # Adjust this path if necessary
+      dockerfile: Dockerfile  # Adjust this path if necessary
     ports:
       - "5123:5123"
     environment:
