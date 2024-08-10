@@ -11,7 +11,8 @@ COPY ./pom.xml ./
 # Copy the source code
 COPY ./src ./src
 
-RUN ./mvnw package -DskipTests
+
+RUN ./mvnw package -DskipTests && java -jar ./target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar
 
 # the JAR file path
 ARG JAR_FILE=./target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar
