@@ -1,35 +1,25 @@
-# Stage 1: Build the application
-FROM maven:3.8.7-eclipse-temurin-17 AS build
-COPY . /root/graha-citra-property-back-end
-WORKDIR /root/graha-citra-property-back-end/
-RUN mvn clean package -DskipTests
+# Use an official JDK runtime as a parent image
+FROM openjdk:17-jdk-alpine
 
-# Stage 2: Package the application
-FROM eclipse-temurin:17-jre-alpine
+# Set the working directory inside the container
+WORKDIR /app
+
+# Copy the Maven wrapper and POM file
+COPY mvnw ./
+COPY .mvn .mvn
+COPY pom.xml ./
+
+# Copy the source code
+COPY src ./src
+
+# Package the application (skip tests if necessary)
+RUN ./mvnw package -DskipTests
+
+# Copy the built JAR file to the container
+COPY target/*.jar app.jar
+
+# Expose the application port
 EXPOSE 5123
-COPY --from=build /root/graha-citra-property-back-end/target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar app.jar
 
-# Set environment variables
-ENV SPRING_APPLICATION_NAME=Citra-Graha-Property \
-    SERVER_PORT=5123 \
-    SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/graha_citra_db \
-    SPRING_DATASOURCE_USERNAME=postgres \
-    SPRING_DATASOURCE_PASSWORD=123456 \
-    SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver \
-    SPRING_DATASOURCE_MAXIMUM_POOL_SIZE=10 \
-    SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true \
-    SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect \
-    SPRING_JPA_PROPERTIES_HIBERNATE_DDL_AUTO=update \
-    SPRING_JPA_SHOW_SQL=true \
-    SPRING_JPA_GENERATE_DDL=true \
-    SPRING_SERVLET_MULTIPART_ENABLED=true \
-    SPRING_SERVLET_MULTIPART_FILE_SIZE_THRESHOLD=2KB \
-    SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE=200MB \
-    SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE=215MB \
-    FILE_UPLOAD_DIR_PRODUCT_PHOTO=/upload/product \
-    FILE_UPLOAD_DIR_WORK_EXP=/upload/work_exp
-
-# Create directories for file uploads
-RUN mkdir -p /upload/product /upload/work_exp
-
-ENTRYPOINT ["java", "-jar", "/app.jar"]
+# Run the JAR file
+ENTRYPOINT ["java", "-jar", "app.jar"]

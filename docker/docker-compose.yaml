@@ -13,7 +13,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
 
   springboot-app:
-    build: .
+    build:
+      context: .
+      dockerfile: docker/Dockerfile  # Adjust this path if necessary
     ports:
       - "5123:5123"
     environment:
