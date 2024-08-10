@@ -5,12 +5,12 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 # Copy the Maven wrapper and POM file
-COPY mvnw ./
-COPY .mvn .mvn
-COPY pom.xml ./
+COPY ../mvnw ./
+COPY ../.mvn .mvn
+COPY ../pom.xml ./
 
 # Copy the source code
-COPY src ./src
+COPY ../src ./src
 
 # Package the application (skip tests if necessary)
 RUN ./mvnw package -DskipTests
