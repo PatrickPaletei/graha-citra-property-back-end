@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: graha_citra_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  springboot-app:
+    build: .
+    ports:
+      - "5123:5123"
+    environment:
+      - SPRING_APPLICATION_NAME=Citra-Graha-Property
+      - SERVER_PORT=5123
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/graha_citra_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=123456
+      - SPRING_DATASOURCE_DRIVER_CLASS_NAME=org.postgresql.Driver
+      - SPRING_DATASOURCE_MAXIMUM_POOL_SIZE=10
+      - SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL=true
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT=org.hibernate.dialect.PostgreSQLDialect
+      - SPRING_JPA_PROPERTIES_HIBERNATE_DDL_AUTO=update
+      - SPRING_JPA_SHOW_SQL=true
+      - SPRING_JPA_GENERATE_DDL=true
+      - SPRING_SERVLET_MULTIPART_ENABLED=true
+      - SPRING_SERVLET_MULTIPART_FILE_SIZE_THRESHOLD=2KB
+      - SPRING_SERVLET_MULTIPART_MAX_FILE_SIZE=200MB
+      - SPRING_SERVLET_MULTIPART_MAX_REQUEST_SIZE=215MB
+      - FILE_UPLOAD_DIR_PRODUCT_PHOTO=/upload/product
+      - FILE_UPLOAD_DIR_WORK_EXP=/upload/work_exp
+    volumes:
+      - /root/graha-citra-property-back-end/product:/upload/product
+      - /root/graha-citra-property-back-end/work_exp:/upload/work_exp
+    depends_on:
+      - db
+    networks:
+      - springboot-network
+
+networks:
+  springboot-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
