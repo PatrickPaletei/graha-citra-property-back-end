@@ -1,26 +1,24 @@
-# the base image
+# Use an official JDK runtime as a parent image
 FROM openjdk:17-jdk-alpine
+
 # Set the working directory inside the container
 WORKDIR /app
 
 # Copy the Maven wrapper and POM file
-COPY ./mvnw ./
-COPY ./.mvn .mvn
-COPY ./pom.xml ./
+COPY mvnw ./
+COPY .mvn .mvn
+COPY pom.xml ./
 
 # Copy the source code
-COPY ./src ./src
+COPY src ./src
+
+# Package the application (skip tests if necessary)
+RUN ./mvnw package -DskipTests
+
+# Print the contents of the target directory for debugging
+RUN ls -la target
+
+# Specify the JAR file to be executed
+CMD ["java", "-jar", "target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar"]
 
 
-RUN ./mvnw package -DskipTests && java -jar ./target/gs-spring-boot-docker-0.1.0.jar
-
-# the JAR file path
-ARG JAR_FILE=./target/gs-spring-boot-docker-0.1.0.jar
-
-# Copy the JAR file from the build context into the Docker image
-COPY ${JAR_FILE} application.jar
-
-CMD apt-get update -y
-
-# Set the default command to run the Java application
-ENTRYPOINT ["java", "-Xmx2048M", "-jar", "/application.jar"]
