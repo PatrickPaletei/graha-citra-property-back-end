@@ -12,10 +12,10 @@ COPY ./pom.xml ./
 COPY ./src ./src
 
 
-RUN ./mvnw package -DskipTests && java -jar ./target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar
+RUN ./mvnw package -DskipTests && java -jar ./target/gs-spring-boot-docker-0.1.0.jar
 
 # the JAR file path
-ARG JAR_FILE=./target/Citra-Graha-Property-0.0.1-SNAPSHOT.jar
+ARG JAR_FILE=./target/gs-spring-boot-docker-0.1.0.jar
 
 # Copy the JAR file from the build context into the Docker image
 COPY ${JAR_FILE} application.jar
