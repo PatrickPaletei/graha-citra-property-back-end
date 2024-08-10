@@ -58,7 +58,7 @@ class ProductPhotoController(
     }
 
     @GetMapping("/loadPhotoOrVideo/{fileName:.+}")
-    @Operation(summary = "Load Product Photo or video By filePath", description = "Load photo or video by file name")
+    @Operation(summary = "Load Product Photo or video By fileName", description = "Load photo or video by file name")
     fun loadPhoto(@PathVariable fileName: String): ResponseEntity<Any> {
         return productPhotoService.loadPhoto(fileName)
     }

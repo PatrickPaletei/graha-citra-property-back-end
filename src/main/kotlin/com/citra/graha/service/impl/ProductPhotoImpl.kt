@@ -1,5 +1,6 @@
 package com.citra.graha.service.impl
 
+import com.citra.graha.config.FileUploadConfig
 import com.citra.graha.dto.DeletePhotoDto
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.DeleteResponse
@@ -8,6 +9,7 @@ import com.citra.graha.entity.MstProduct
 import com.citra.graha.entity.ProductPhoto
 import com.citra.graha.repository.ProductPhotoRepository
 import com.citra.graha.service.ProductPhotoService
+import com.citra.graha.util.PhotoUtil
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.core.io.FileSystemResource
 import org.springframework.core.io.Resource
@@ -25,10 +27,10 @@ import java.time.format.DateTimeFormatter
 @Service
 class ProductPhotoImpl(
     val productPhotoRepository: ProductPhotoRepository,
-    @Value("\${file.upload-dir}") val uploadDir: String
+    fileUploadConfig: FileUploadConfig
 ): ProductPhotoService {
 
-    private val uploadPath: Path = Paths.get(uploadDir)
+    private val uploadPath: Path = Paths.get(fileUploadConfig.uploadDir)
 
     init {
         Files.createDirectories(uploadPath)
@@ -182,28 +184,8 @@ class ProductPhotoImpl(
     }
 
     override fun loadPhoto(fileName: String): ResponseEntity<Any> {
-        return try {
-            val filePath = uploadPath.resolve(fileName).normalize()
-            val resource: Resource = FileSystemResource(filePath)
-
-            if (resource.exists() && resource.isReadable) {
-                ResponseEntity.ok()
-                    .contentType(MediaType.APPLICATION_OCTET_STREAM)
-                    .body(resource)
-            } else {
-                ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(BaseResponse(
-                        status = "F",
-                        message = "File not found",
-                        data = null
-                    ))
-            }
-        } catch (e: Exception) {
-            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(null)
-        }
+        return PhotoUtil.loadPhotoFromPath(uploadPath, fileName)
     }
-
 
 }
 
