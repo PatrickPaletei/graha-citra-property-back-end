@@ -8,7 +8,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 class PathMatchingInterceptor(
     val authInterceptor: AuthInterceptor
 ): WebMvcConfigurer {
-    override fun addInterceptors(registry: InterceptorRegistry) {
+//    override fun addInterceptors(registry: InterceptorRegistry) {
 //        registry.addInterceptor(authInterceptor).excludePathPatterns(
 //            "/api/auth/user/login",
 //            "/api/auth/user/register",
@@ -32,5 +32,5 @@ class PathMatchingInterceptor(
 //            "/api/workexperience/all",
 //            "/api/workexperience/{id}"
 //        )
-    }
+//    }
 }
