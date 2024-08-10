@@ -16,6 +16,9 @@ COPY ../src ./src
 # RUN ./mvnw package && java -jar target/gs-spring-boot-docker-0.1.0.jar -DskipTests
 RUN ./mvnw package -DskipTests && java -jar target/gs-spring-boot-docker-0.1.0.jar
 
+# Ensure the JAR file is present
+RUN ls -l target/
+
 # Copy the built JAR file to the container
 COPY target/gs-spring-boot-docker-0.1.0.jar app.jar
 
