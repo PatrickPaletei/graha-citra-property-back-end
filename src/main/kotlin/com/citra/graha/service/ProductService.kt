@@ -18,4 +18,5 @@ interface ProductService {
     fun getByStatusName(statusName: String): ResponseEntity<BaseResponse<List<MstProduct>>>
     fun getByStatusId(statusId: Int): ResponseEntity<BaseResponse<List<MstProduct>>>
     fun updateProduct(existProduct: MstProduct, product: UpdateProductRequest, propertyType: MstPropertyType?, status: MstStatus?): ResponseEntity<BaseResponse<MstProduct>>
+    fun searchProduct(searchValue: String): ResponseEntity<BaseResponse<List<MstProduct>>>
 }

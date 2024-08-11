@@ -238,4 +238,24 @@ class ProductImpl(
             )
         )
     }
+
+    override fun searchProduct(searchValue: String): ResponseEntity<BaseResponse<List<MstProduct>>> {
+        val productSearch = productRepository.searchProduct(searchValue)
+        if(productSearch.isEmpty()){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                BaseResponse(
+                    status = "F",
+                    message = "Product not found",
+                    data = null
+                )
+            )
+        }
+        return ResponseEntity.ok(
+            BaseResponse(
+                status = "T",
+                message = "Search product",
+                data = productSearch
+            )
+        )
+    }
 }
