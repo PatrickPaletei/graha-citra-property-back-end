@@ -2,22 +2,26 @@ version: '3.8'
 
 services:
   springboot:
-    image: 'docker-spring-boot-postgres:latest'
     build:
       context: .
     container_name: springboot
     environment:
       - POSTGRES_USER=graha_citra-api
       - POSTGRES_PASSWORD=XW204Wavz,S98(M
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/graha_citra_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/graha_citra_db
       - SPRING_DATASOURCE_USERNAME=graha_citra-api
       - SPRING_DATASOURCE_PASSWORD=XW204Wavz,S98(M
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - FILE_UPLOAD_DIR_PRODUCT_PHOTO=/upload/product
+      - FILE_UPLOAD_DIR_WORK_EXP=/upload/work_exp
+    volumes:
+      - /root/graha-citra-property-back-end/product:/upload/product
+      - /root/graha-citra-property-back-end/work_exp:/upload/work_exp
     ports:
       - "5123:5123"
-#     networks:
-#       db:
+    networks:
+      - springboot-network
 
-# networks:
-#     db:
-#         driver: host
+networks:
+  springboot-network:
+    driver: bridge

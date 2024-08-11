@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   postgres:
-    image: postgres
+    image: postgres:15-alpine
     container_name: postgres
     environment:
       - POSTGRES_USER=graha_citra-api
@@ -12,9 +12,12 @@ services:
       - "5432:5432"
     expose:
       - "5432"
-#     networks:
-#       db:
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      
+networks:
+  springboot-network:
+    driver: bridge
 
-# networks:
-#     db:
-#       driver: host
+volumes:
+  postgres_data:
