@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  springboot-api:
+  springboot:
     image: 'docker-spring-boot-postgres:latest'
     build:
       context: .
-    container_name: springboot-api
+    container_name: springboot
     environment:
       - POSTGRES_USER=graha_citra-api
       - POSTGRES_PASSWORD=XW204Wavz,S98(M
@@ -16,9 +16,8 @@ services:
     ports:
       - "5123:5123"
     networks:
-      - my_network
+      - db
 
 networks:
-  my_network:
-    external:
-      name: my_network
+    db:
+        driver: host
