@@ -5,8 +5,8 @@ services:
     image: postgres
     container_name: db
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456
+      - POSTGRES_USER=graha_citra-api
+      - POSTGRES_PASSWORD=XW204Wavz,S98(M
       - POSTGRES_DB=graha_citra_db
     ports:
       - "5432:5432"
