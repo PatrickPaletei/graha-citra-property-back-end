@@ -1,10 +1,23 @@
 version: '3.8'
 
 services:
-  springboot:
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: graha_citra_db
+      POSTGRES_USER: graha_citra-api
+      POSTGRES_PASSWORD: XW204Wavz,S98(M
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  springboot-app:
     build:
       context: .
-    container_name: springboot
+      dockerfile: Dockerfile  # Adjust this path if necessary
+    ports:
+      - "5123:5123"
     environment:
       - POSTGRES_USER=graha_citra-api
       - POSTGRES_PASSWORD=XW204Wavz,S98(M
@@ -17,11 +30,14 @@ services:
     volumes:
       - /root/graha-citra-property-back-end/product:/upload/product
       - /root/graha-citra-property-back-end/work_exp:/upload/work_exp
-    ports:
-      - "5123:5123"
+    depends_on:
+      - db
     networks:
       - springboot-network
 
 networks:
   springboot-network:
     driver: bridge
+
+volumes:
+  postgres_data:
