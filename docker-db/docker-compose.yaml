@@ -12,9 +12,9 @@ services:
       - "5432:5432"
     expose:
       - "5432"
-    networks:
-      db:
+#     networks:
+#       db:
 
-networks:
-    db:
-      driver: host
+# networks:
+#     db:
+#       driver: host
