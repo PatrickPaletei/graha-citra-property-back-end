@@ -64,5 +64,25 @@ class WorkExpPhotoController(
         return workExpPhotoService.loadPhoto(fileName)
     }
 
+    @DeleteMapping("/deletePhoto/{idWorkExpPhoto}")
+    fun deleteWorkExpPhoto(@PathVariable idWorkExpPhoto: Int): ResponseEntity<BaseResponse<Any>>{
+        val photo = workExpPhotoRepository.findById(idWorkExpPhoto)
+        if(photo.isEmpty){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
+                BaseResponse(
+                    status = "F",
+                    message = "idWorkExpPhoto not found",
+                    data = null
+                )
+            )
+        }
+        val deleteReturn = workExpPhotoService.deletePhoto(photo.get().workExpPhotoId!!)
+        return ResponseEntity.status(deleteReturn.statusCode).body(
+            BaseResponse(
+                status = deleteReturn.statusString,
+                message = deleteReturn.message
+            )
+        )
+    }
 
 }

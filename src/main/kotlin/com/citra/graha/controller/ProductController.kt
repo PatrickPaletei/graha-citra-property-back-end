@@ -128,6 +128,11 @@ class ProductController(
         return productService.getAll()
     }
 
+    @GetMapping("/search")
+    fun searchProduct(@RequestParam(name = "searchValue", defaultValue = "") searchValue: String): ResponseEntity<BaseResponse<List<MstProduct>>>{
+        return productService.searchProduct(searchValue)
+    }
+
     @GetMapping("/{idProduct}")
     @Operation(summary = "Get product by id", description = "Mendapatkan product berdasarkan id")
     fun getProductById(@Parameter(description = "id of the product to be fetch", required = true) @PathVariable idProduct: Int): ResponseEntity<BaseResponse<MstProduct>>{

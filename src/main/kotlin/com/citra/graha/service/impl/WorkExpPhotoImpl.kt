@@ -1,7 +1,9 @@
 package com.citra.graha.service.impl
 
 import com.citra.graha.config.FileUploadConfig
+import com.citra.graha.dto.DeletePhotoDto
 import com.citra.graha.dto.response.BaseResponse
+import com.citra.graha.dto.response.DeleteResponse
 import com.citra.graha.dto.response.WorkExpPhotoResponse
 import com.citra.graha.entity.MstWorkExperience
 import com.citra.graha.entity.ProductPhoto
@@ -103,6 +105,59 @@ class WorkExpPhotoImpl(
 
     override fun loadPhoto(fileName: String): ResponseEntity<Any> {
         return PhotoUtil.loadPhotoFromPath(uploadPath, fileName)
+    }
+
+    override fun deletePhoto(idWorkExpPhoto: Int): DeleteResponse {
+        val photo = workExpPhotoRepository.findById(idWorkExpPhoto)
+        return try{
+            val workExpPhoto = photo.get()
+            val filePath = Paths.get(workExpPhoto.filePath)
+
+            if (Files.exists(filePath)) {
+                Files.delete(filePath)
+            } else{
+                DeleteResponse(
+                    statusCode = HttpStatus.NOT_FOUND,
+                    statusString = "F",
+                    message = "File not found"
+                )
+            }
+            workExpPhotoRepository.delete(workExpPhoto)
+            DeleteResponse(
+                statusCode = HttpStatus.OK,
+                statusString = "T",
+                message = "Photo deleted successfully"
+            )
+        } catch(e: Exception){
+            DeleteResponse(
+                statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
+                statusString = "F",
+                message = "Failed to delete photo"
+            )
+        }
+    }
+
+    override fun checkPhotoExist(workExpList: List<WorkExpPhoto>): DeletePhotoDto {
+        val listIds = mutableListOf<Int>()
+        val listPath = mutableListOf<Path>()
+        workExpList.forEach { photo ->
+            val photoExist = workExpPhotoRepository.findById(photo.workExpPhotoId!!)
+            val filePath = Paths.get(photoExist.get().filePath)
+            listIds.add(photo.workExpPhotoId)
+            listPath.add(filePath)
+            if(photoExist.isEmpty && !Files.exists(filePath)){
+                return DeletePhotoDto(
+                    canDelete = false,
+                    listPhotoId = null,
+                    listPhotoPath = null
+                )
+            }
+        }
+        return DeletePhotoDto(
+            canDelete = true,
+            listPhotoId = listIds,
+            listPhotoPath = listPath
+        )
     }
 
     private fun generateCustomFileName(originalFileName: String): String {

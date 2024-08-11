@@ -4,18 +4,23 @@ import com.citra.graha.dto.request.AddWorkExperience
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.entity.MstWorkExperience
 import com.citra.graha.repository.ServiceRepository
+import com.citra.graha.repository.WorkExpPhotoRepository
 import com.citra.graha.repository.WorkExperienceRepository
+import com.citra.graha.service.WorkExpPhotoService
 import com.citra.graha.service.WorkExperienceService
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import java.nio.file.Files
 
 @RestController
 @RequestMapping("/api/workexperience")
 class WorkExperienceController(
     val workExperienceService: WorkExperienceService,
     val serviceRepository: ServiceRepository,
-    val workExperienceRepository: WorkExperienceRepository
+    val workExperienceRepository: WorkExperienceRepository,
+    val workExpPhotoRepository: WorkExpPhotoRepository,
+    val workExpPhotoService: WorkExpPhotoService
 ) {
     @PostMapping
     fun addWorkExperience(@RequestBody addWorkExperience: AddWorkExperience): ResponseEntity<BaseResponse<MstWorkExperience>>{
@@ -67,6 +72,26 @@ class WorkExperienceController(
                     data = null
                 )
             )
+        }
+        val listPhoto = workExpPhotoRepository.findByWorkExperienceId(workExperience.get())
+        if(listPhoto.isEmpty()){
+            return workExperienceService.deleteWorkExperience(workExperience.get())
+        }
+        val photoToDelete = workExpPhotoService.checkPhotoExist(listPhoto)
+        if(!photoToDelete.canDelete){
+            return ResponseEntity.ok(
+                BaseResponse(
+                    status = "F",
+                    message = "Failed to delete product, file not found or photo id not found",
+                    data = null
+                )
+            )
+        }
+        workExperienceRepository.deleteByIds(photoToDelete.listPhotoId!!)
+        photoToDelete.listPhotoPath!!.forEach { photoPath ->
+            if (Files.exists(photoPath)) {
+                Files.delete(photoPath)
+            }
         }
         return workExperienceService.deleteWorkExperience(workExperience.get())
     }
