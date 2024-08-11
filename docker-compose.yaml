@@ -5,7 +5,7 @@ services:
     image: 'docker-spring-boot-postgres:latest'
     build:
       context: .
-    container_name: app
+    container_name: springboot-api
     depends_on:
       - db
     environment:
