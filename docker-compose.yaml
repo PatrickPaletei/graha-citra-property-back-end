@@ -6,8 +6,6 @@ services:
     build:
       context: .
     container_name: springboot-api
-    depends_on:
-      - db
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123456
@@ -15,17 +13,12 @@ services:
       - SPRING_DATASOURCE_USERNAME=postgres
       - SPRING_DATASOURCE_PASSWORD=123456
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
     ports:
       - "5123:5123"
+    networks:
+      - my_network
 
-  db:
-    image: postgres
-    container_name: db
-    environment:
-  
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=123456
-      - POSTGRES_DB=graha_citra_db
-    ports:
-      - "5432:5432"
+networks:
+  my_network:
+    external:
+      name: my_network
