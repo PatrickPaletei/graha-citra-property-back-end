@@ -21,7 +21,7 @@ services:
     environment:
       - POSTGRES_USER=graha_citra-api
       - POSTGRES_PASSWORD=XW204Wavz,S98(M
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/graha_citra_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/graha_citra_db
       - SPRING_DATASOURCE_USERNAME=graha_citra-api
       - SPRING_DATASOURCE_PASSWORD=XW204Wavz,S98(M
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
