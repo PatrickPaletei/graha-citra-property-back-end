@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  app:
+  springboot-api:
     image: 'docker-spring-boot-postgres:latest'
     build:
       context: .
