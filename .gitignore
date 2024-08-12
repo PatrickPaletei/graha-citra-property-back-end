@@ -1,7 +1,7 @@
 HELP.md
 application.properties
 
-target/
+/target/*
 !/target/*.jar
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
