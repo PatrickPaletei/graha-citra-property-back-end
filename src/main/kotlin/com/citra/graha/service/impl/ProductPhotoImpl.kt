@@ -10,11 +10,7 @@ import com.citra.graha.entity.ProductPhoto
 import com.citra.graha.repository.ProductPhotoRepository
 import com.citra.graha.service.ProductPhotoService
 import com.citra.graha.util.PhotoUtil
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.core.io.FileSystemResource
-import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
@@ -145,13 +141,6 @@ class ProductPhotoImpl(
                     statusString = "F",
                     message = "File not found"
                 )
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-//                    BaseResponse(
-//                        status = "F",
-//                        message = "File not found",
-//                        data = null
-//                    )
-//                )
             }
             productPhotoRepository.delete(productPhoto)
             DeleteResponse(
@@ -159,27 +148,12 @@ class ProductPhotoImpl(
                 statusString = "T",
                 message = "Photo deleted successfully"
             )
-
-//            ResponseEntity.ok(
-//                BaseResponse(
-//                    status = "T",
-//                    message = "Photo deleted successfully",
-//                    data = null
-//                )
-//            )
         } catch (e: Exception) {
             DeleteResponse(
                 statusCode = HttpStatus.INTERNAL_SERVER_ERROR,
                 statusString = "F",
                 message = "Failed to delete photo"
             )
-//            ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
-//                BaseResponse(
-//                    status = "F",
-//                    message = "Failed to delete photo",
-//                    data = null
-//                )
-//            )
         }
     }
 

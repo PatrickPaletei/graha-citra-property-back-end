@@ -92,7 +92,7 @@ class ProductController(
         ]
     )
     fun addProduct(@RequestBody addProductRequest: AddProductRequest): ResponseEntity<BaseResponse<MstProduct>>{
-        val status = statusRepository.findById(addProductRequest.statusId!!)
+        val status = statusRepository.findById(addProductRequest.statusId)
         if (status.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
@@ -102,7 +102,7 @@ class ProductController(
             )
         }
 
-        val propertyType = propertyTypeRepository.findById(addProductRequest.propertyId!!)
+        val propertyType = propertyTypeRepository.findById(addProductRequest.propertyId)
         if (propertyType.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
