@@ -13,10 +13,14 @@ import com.citra.graha.repository.StatusRepository
 import com.citra.graha.service.ProductPhotoService
 import com.citra.graha.service.ProductService
 import com.citra.graha.util.ApiDocumentation
+import com.citra.graha.util.swaggerschema.NullResponse
+import com.citra.graha.util.swaggerschema.product.BaseResponseWithMstProduct
+import com.citra.graha.util.swaggerschema.product.BaseResponseWithListMstProduct
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content
 import io.swagger.v3.oas.annotations.media.ExampleObject
+import io.swagger.v3.oas.annotations.media.Schema
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.slf4j.LoggerFactory
@@ -48,20 +52,45 @@ class ProductController(
     val log = LoggerFactory.getLogger(this::class.java)
 
     @PostMapping
-    @Operation(summary = "Create product", description = "buat nambahin product",
+    @Operation(
+        summary = "Create product",
+        description = "Add a new product with details such as address, bedroom count, description, and more.",
         requestBody = io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = [
                 Content(
                     mediaType = "application/json",
                     examples = [
                         ExampleObject(
-                            name = "All fields cannot be null",
+                            name = "Sample Product",
                             value = ApiDocumentation.Request.ADD_PRODUCT_REQUEST_EXAMPLE
                         )
                     ]
                 )
             ]
-        ))
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "201",
+                description = "status = T. message = Add Product Successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithMstProduct::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. message = statusId or propertyId not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun addProduct(@RequestBody addProductRequest: AddProductRequest): ResponseEntity<BaseResponse<MstProduct>>{
         val status = statusRepository.findById(addProductRequest.statusId!!)
         if (status.isEmpty){
@@ -86,7 +115,34 @@ class ProductController(
     }
 
     @DeleteMapping("/{idProduct}")
-    @Operation(summary = "Delete product", description = "Menghapus product berdasarkan id")
+    @Operation(
+        summary = "Delete product",
+        description = "Menghapus product berdasarkan idProduct.",
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "status: T. message: Delete Product Successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "status: F. possible messages: \n" +
+                        "1. Product with product id <idProduct> not exist\n" +
+                        "2. Failed to delete product, file not found or photo id not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun deleteProduct(@Parameter(description = "id of the product to be deleted") @PathVariable idProduct: Int): ResponseEntity<BaseResponse<Any>>{
         val existProduct = productRepository.findById(idProduct)
         if (existProduct.isEmpty){
@@ -105,7 +161,7 @@ class ProductController(
         }
         val photoToDelete = productPhotoService.checkPhotosExist(listPhoto)
         if (!photoToDelete.canDelete){
-            return ResponseEntity.ok(
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                 BaseResponse(
                     status = "F",
                     message = "Failed to delete product, file not found or photo id not found",
@@ -123,24 +179,154 @@ class ProductController(
     }
 
     @GetMapping("/allProducts")
-    @Operation(summary = "Get all products", description = "Mendapatkan semua product")
+    @Operation(
+        summary = "Get all products",
+        description = "Mendapatkan semua product",
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Get all Products",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithListMstProduct::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. message = Product not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun getAllProducts(): ResponseEntity<BaseResponse<List<MstProduct>>>{
         return productService.getAll()
     }
 
     @GetMapping("/search")
-    fun searchProduct(@RequestParam(name = "searchValue", defaultValue = "") searchValue: String): ResponseEntity<BaseResponse<List<MstProduct>>>{
+    @Operation(
+        summary = "Search products",
+        description = "Search for products based on a search value",
+        parameters = [
+            Parameter(
+                name = "searchValue",
+                description = "The value to search for in products",
+                required = false,
+                schema = Schema(type = "string"),
+                example = "test"
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Search product",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithListMstProduct::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. message = Product not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun searchProduct(@Parameter(description = "search value", required = true) @RequestParam(name = "searchValue", defaultValue = "") searchValue: String): ResponseEntity<BaseResponse<List<MstProduct>>>{
         return productService.searchProduct(searchValue)
     }
 
     @GetMapping("/{idProduct}")
-    @Operation(summary = "Get product by id", description = "Mendapatkan product berdasarkan id")
+    @Operation(
+        summary = "Get product by id",
+        description = "Mendapatkan product berdasarkan id",
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Get product by id",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithMstProduct::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. message = Product <id> not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun getProductById(@Parameter(description = "id of the product to be fetch", required = true) @PathVariable idProduct: Int): ResponseEntity<BaseResponse<MstProduct>>{
         return productService.getById(idProduct)
     }
 
     @GetMapping("/propertyType")
-    @Operation(summary = "Get product by property type name", description = "\"To get by propertyType you should put propertyTypeName or propertyTypeId, one of the value cannot be null or empty.")
+    @Operation(
+        summary = "Get product by property type name",
+        description = "To get by propertyType you should put propertyTypeName or propertyTypeId",
+        parameters = [
+            Parameter(
+                name = "propertyTypeName",
+                description = "The name of the property type",
+                required = false,
+                schema = Schema(type = "string"),
+                example = "Rumah"
+            ),
+            Parameter(
+                name = "propertyTypeId",
+                description = "The ID of the property type",
+                required = false,
+                schema = Schema(type = "string"),
+                example = "1"
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Get by property type <propertyType>",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithListMstProduct::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "status = F. possible messages: \n" +
+                        "1. Please input the propertyTypeName or propertyTypeId \n" +
+                        "2. Invalid request \n" +
+                        "3. <propertyType> not found \n" +
+                        "4. No products found with property type <propertyType>",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun getByPropertyType(@RequestParam(name = "propertyTypeName", defaultValue = "") propertyTypeName: String,
                           @RequestParam(name = "propertyTypeId", defaultValue = "") propertyTypeId: String): ResponseEntity<BaseResponse<List<MstProduct>>>{
         if ("" == propertyTypeName && "" == propertyTypeId){
@@ -164,7 +350,52 @@ class ProductController(
     }
 
     @GetMapping("/status")
-    @Operation(summary = "Get product by status", description = "Mendapatkan product berdasarkan status name atau status id")
+    @Operation(
+        summary = "Get product by status",
+        description = "Mendapatkan product berdasarkan status name atau status id (hanya salah satu)",
+        parameters = [
+            Parameter(
+                name = "statusName",
+                description = "nama status",
+                required = false,
+                schema = Schema(type = "string"),
+                example = "sold"
+            ),
+            Parameter(
+                name = "statusId",
+                description = "id status",
+                required = false,
+                schema = Schema(type = "string"),
+                example = "1"
+            )
+        ],
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Get by status",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithListMstProduct::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "status = F. possible messages: \n" +
+                        "1. Please input the statusName or statusId \n" +
+                        "2. Invalid request \n" +
+                        "3. <Status> not found \n" +
+                        "4. No products found with status <status>",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun getByStatus(@RequestParam(name = "statusName", defaultValue = "") statusName: String,
                         @RequestParam(name = "statusId", defaultValue = "") statusId: String): ResponseEntity<BaseResponse<List<MstProduct>>>{
         if ("" == statusName && "" == statusId){
@@ -212,7 +443,43 @@ class ProductController(
                     ]
                 )
             ]
-        ))
+        ),
+        responses = [
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Product updated",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithMstProduct::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "status = F. message = Please input the product id",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. possible messages: \n" +
+                        "1. Product not found \n" +
+                        "2. Status not found \n" +
+                        "3. Property type not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun updateProduct(@RequestBody productData: UpdateProductRequest): ResponseEntity<BaseResponse<MstProduct>>{
         var existsPropertyType: Optional<MstPropertyType>? = null
         var existsStatus: Optional<MstStatus>? = null

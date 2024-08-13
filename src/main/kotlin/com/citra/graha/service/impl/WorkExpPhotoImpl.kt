@@ -6,15 +6,11 @@ import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.DeleteResponse
 import com.citra.graha.dto.response.WorkExpPhotoResponse
 import com.citra.graha.entity.MstWorkExperience
-import com.citra.graha.entity.ProductPhoto
 import com.citra.graha.entity.WorkExpPhoto
 import com.citra.graha.repository.WorkExpPhotoRepository
 import com.citra.graha.service.WorkExpPhotoService
 import com.citra.graha.util.PhotoUtil
-import org.springframework.core.io.FileSystemResource
-import org.springframework.core.io.Resource
 import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile

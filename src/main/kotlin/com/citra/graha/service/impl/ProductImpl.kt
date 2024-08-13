@@ -38,7 +38,7 @@ class ProductImpl(
             dtSold = null
         )
         productRepository.save(mstProduct)
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
             BaseResponse(
                 status = "T",
                 message = "Add Product Successfully"
