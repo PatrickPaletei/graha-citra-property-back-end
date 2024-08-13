@@ -14,8 +14,8 @@ import com.citra.graha.service.ProductPhotoService
 import com.citra.graha.service.ProductService
 import com.citra.graha.util.ApiDocumentation
 import com.citra.graha.util.swaggerschema.NullResponse
-import com.citra.graha.util.swaggerschema.product.BaseResponseWithMstProduct
-import com.citra.graha.util.swaggerschema.product.BaseResponseWithListMstProduct
+import com.citra.graha.util.swaggerschema.BaseResponseWithMstProduct
+import com.citra.graha.util.swaggerschema.BaseResponseWithListMstProduct
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content

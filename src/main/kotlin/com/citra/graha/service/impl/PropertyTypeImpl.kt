@@ -1,6 +1,5 @@
 package com.citra.graha.service.impl
 
-import com.citra.graha.dto.request.UpdatePropertyTypeRequest
 import com.citra.graha.dto.response.BaseResponse
 import com.citra.graha.dto.response.PropertyTypeResponse
 import com.citra.graha.entity.MstPropertyType
@@ -14,7 +13,7 @@ import org.springframework.stereotype.Service
 class PropertyTypeImpl(
     val propertyTypeRepository: PropertyTypeRepository
 ) : PropertyTypeService {
-    override fun addPropertyType(propertyType: String): ResponseEntity<BaseResponse<Any>> {
+    override fun addPropertyType(propertyType: String): ResponseEntity<BaseResponse<MstPropertyType>> {
         val propertyType = MstPropertyType(
             propertyName = propertyType
         )
@@ -22,7 +21,8 @@ class PropertyTypeImpl(
         return ResponseEntity.ok(
             BaseResponse(
                 status = "T",
-                message = "Property Type added successfully"
+                message = "Property Type added successfully",
+                data = propertyType
             )
         )
     }
@@ -72,15 +72,15 @@ class PropertyTypeImpl(
         mstPropertyType: MstPropertyType,
         propertyTypeId: Int,
         propertyTypeName: String
-    ): ResponseEntity<BaseResponse<Any>> {
+    ): ResponseEntity<BaseResponse<PropertyTypeResponse>> {
         val updatedPropertyType = mstPropertyType.copy(propertyName = propertyTypeName)
         propertyTypeRepository.save(updatedPropertyType)
         return ResponseEntity.ok(
             BaseResponse(
                 status = "T",
                 message = "Property Type updated",
-                data = UpdatePropertyTypeRequest(
-                    propertyId = propertyTypeId,
+                data = PropertyTypeResponse(
+                    propertyTypeId = propertyTypeId,
                     propertyName = propertyTypeName
                 )
             )

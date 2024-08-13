@@ -6,7 +6,7 @@ import com.citra.graha.repository.ProductRepository
 import com.citra.graha.repository.ProductPhotoRepository
 import com.citra.graha.service.ProductPhotoService
 import com.citra.graha.util.swaggerschema.NullResponse
-import com.citra.graha.util.swaggerschema.productphoto.BaseResponseWithListPhotoResponse
+import com.citra.graha.util.swaggerschema.BaseResponseWithListPhotoResponse
 import io.swagger.v3.oas.annotations.Operation
 import io.swagger.v3.oas.annotations.Parameter
 import io.swagger.v3.oas.annotations.media.Content

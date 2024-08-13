@@ -58,5 +58,11 @@ object ApiDocumentation {
                 "productVisitCount": 5
             }
         """
+        const val UPDATE_PROPERTY_TYPE_REQUEST_EXAMPLE = """
+            {
+                "propertyId": 1,
+                "propertyName": "Test"
+            }
+        """
     }
 }

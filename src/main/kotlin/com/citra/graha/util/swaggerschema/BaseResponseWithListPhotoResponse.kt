@@ -1,4 +1,4 @@
-package com.citra.graha.util.swaggerschema.productphoto
+package com.citra.graha.util.swaggerschema
 
 import com.citra.graha.dto.response.PhotoResponse
 

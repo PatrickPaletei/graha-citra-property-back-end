@@ -1,4 +1,4 @@
-package com.citra.graha.util.swaggerschema.product
+package com.citra.graha.util.swaggerschema
 
 
 import com.citra.graha.entity.MstProduct
