@@ -1,12 +1,5 @@
 package com.citra.graha.util
 
-import com.citra.graha.dto.response.BaseResponse
-import io.swagger.v3.oas.annotations.media.Content
-import io.swagger.v3.oas.annotations.media.ExampleObject
-import io.swagger.v3.oas.annotations.media.Schema
-import io.swagger.v3.oas.annotations.parameters.RequestBody
-import io.swagger.v3.oas.annotations.responses.ApiResponse
-
 object ApiDocumentation {
     object Request {
         const val ADD_SERVICE_REQUEST_EXAMPLE = """
@@ -62,6 +55,48 @@ object ApiDocumentation {
             {
                 "propertyId": 1,
                 "propertyName": "Test"
+            }
+        """
+        const val REGISTER_USER_REQUEST_EXAMPLE_WITH_STATUS = """
+            {
+                "username": "daniel",
+                "email": "daniel@gmail.com",
+                "password": "daniel123",
+                "status": "01",
+                "roleId": 1
+            }
+        """
+        const val REGISTER_USER_REQUEST_EXAMPLE_WITHOUT_STATUS = """
+            {
+                "username": "daniel",
+                "email": "daniel@gmail.com",
+                "password": "daniel123",
+                "roleId": 1
+            }
+        """
+        const val LOGIN_USER_REQUEST_EXAMPLE = """
+            {
+                "username": "daniel",
+                "password": "daniel123"
+            }
+        """
+        const val UPDATE_USER_REQUEST_USERNAME = """
+            {
+                "id": 1,
+                "username": "danielupdate"
+            }
+        """
+        const val UPDATE_USER_REQUEST_PASSWORD = """
+            {
+                "id": 1,
+                "password": "updatepassword"
+            }
+        """
+        const val UPDATE_USER_REQUEST_ROLE_STATUS = """
+            {
+                "id": 1,
+                "roleId": 1,
+                "status": "00"
             }
         """
     }

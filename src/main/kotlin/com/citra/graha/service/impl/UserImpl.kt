@@ -28,7 +28,7 @@ class UserImpl(
         )
 
         userRepository.save(user)
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
             BaseResponse(
                 status = "T",
                 message = "User created",

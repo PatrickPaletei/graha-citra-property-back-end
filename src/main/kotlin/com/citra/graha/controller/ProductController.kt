@@ -143,7 +143,7 @@ class ProductController(
             )
         ]
     )
-    fun deleteProduct(@Parameter(description = "id of the product to be deleted") @PathVariable idProduct: Int): ResponseEntity<BaseResponse<Any>>{
+    fun deleteProduct(@Parameter(description = "id of the product to be deleted", required = true) @PathVariable idProduct: Int): ResponseEntity<BaseResponse<Any>>{
         val existProduct = productRepository.findById(idProduct)
         if (existProduct.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
