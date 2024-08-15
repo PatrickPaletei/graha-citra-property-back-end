@@ -32,7 +32,7 @@ class JWTGenerator {
             .setIssuer("grahacitra")
             .setAudience("grahacitra")
             .signWith(signingKey, signatureAlgorithm)
-        val expMills = nowMills + 300000L // 5 menit
+        val expMills = nowMills + 7200000L // 2 jam
         val exp = Date(expMills)
         builder.setExpiration(exp)
         return builder.compact()
