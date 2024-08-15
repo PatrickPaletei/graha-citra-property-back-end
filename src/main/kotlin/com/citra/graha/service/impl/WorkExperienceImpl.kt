@@ -24,7 +24,7 @@ class WorkExperienceImpl(
             serviceId = service
         )
         workExperienceRepository.save(workExperience)
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
             BaseResponse(
                 status = "T",
                 message = "Work experience created",

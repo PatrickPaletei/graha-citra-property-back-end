@@ -99,5 +99,31 @@ object ApiDocumentation {
                 "status": "00"
             }
         """
+        const val ADD_WORK_EXP_REQUEST_EXAMPLE = """
+            {
+                "name" : "test",
+                "description" : "test description",
+                "serviceId": 1
+            }
+        """
+        const val UPDATE_WORK_EXP_REQUEST_NAME = """
+            {
+                "id" : 1,
+                "name" : "test update"
+            }
+        """
+        const val UPDATE_WORK_EXP_REQUEST_DESCRIPTION = """
+            {
+                "id" : 1,
+                "description" : "update description"
+            }
+        """
+        const val UPDATE_WORK_EXP_REQUEST_NAME_SERVICE = """
+            {
+                "id" : 1,
+                "name" : "update name",
+                "serviceId" : 2
+            }
+        """
     }
 }
