@@ -125,5 +125,24 @@ object ApiDocumentation {
                 "serviceId" : 2
             }
         """
+        const val UPDATE_SERVICE_REQUEST_SERVICE_NAME = """
+            {
+                "id" : 1,
+                "serviceName" : "test update"
+            }
+        """
+        const val UPDATE_SERVICE_REQUEST_SERVICE_DESCRIPTION = """
+            {
+                "id" : 1,
+                "serviceDescription" : "test description update"
+            }
+        """
+        const val UPDATE_SERVICE_REQUEST_SERVICE_DESCRIPTION_NAME = """
+            {
+                "id" : 1,
+                "serviceName" : "test update",
+                "serviceDescription" : "test description update"
+            }
+        """
     }
 }
