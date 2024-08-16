@@ -7,7 +7,13 @@ import com.citra.graha.entity.WorkExpPhoto
 import com.citra.graha.repository.WorkExpPhotoRepository
 import com.citra.graha.repository.WorkExperienceRepository
 import com.citra.graha.service.WorkExpPhotoService
+import com.citra.graha.util.swaggerschema.BaseResponseWithListWorkExpPhotoResponse
+import com.citra.graha.util.swaggerschema.NullResponse
 import io.swagger.v3.oas.annotations.Operation
+import io.swagger.v3.oas.annotations.Parameter
+import io.swagger.v3.oas.annotations.media.Content
+import io.swagger.v3.oas.annotations.media.Schema
+import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.tags.Tag
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -24,10 +30,55 @@ class WorkExpPhotoController(
 ) {
 
     @PostMapping("/addWorkExpPhotoOrVideo/{workExpId}")
-    @Operation(summary = "Create work exp photo or video", description = "buat nambahin foto work exp, file ditaruh di body pake form-data")
+    @Operation(
+        summary = "Create work exp photo or video",
+        description = "buat nambahin foto work exp, file ditaruh di body pake form-data",
+        responses = [
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. message = Work Exp id's not found",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "400",
+                description = "status = F. message = Please select at least one file to upload",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "200",
+                description = "status = F. message = Photos or video added successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "status = F. message = Failed to upload photos or video",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
     fun createWorkExpPhoto(
-        @PathVariable("workExpId") workExpId: Int,
-        @RequestParam("photo") photo: List<MultipartFile>
+        @Parameter(description = "id dari work exp yang mau ditambah fotonya", required = true) @PathVariable("workExpId") workExpId: Int,
+        @Parameter(description = "file photo yang ingin disimpan untuk id work exp", required = true) @RequestParam("photo") photo: List<MultipartFile>
     ): ResponseEntity<BaseResponse<Any>> {
         val existWorkExpId = workExpRepository.findById(workExpId)
         if (existWorkExpId.isEmpty) {
@@ -43,8 +94,35 @@ class WorkExpPhotoController(
     }
 
     @GetMapping("/getPhotoOrVideo/{workExpId}")
-    @Operation(summary = "Get All work exp Photo or Video By Id", description = "buat ambil semua foto atau video work exp sesuai product ID")
-    fun getWorkExpPhoto(@PathVariable("workExpId") workExpId: Int): ResponseEntity<BaseResponse<List<WorkExpPhotoResponse>>> {
+    @Operation(
+        summary = "Get All work exp Photo or Video By Id",
+        description = "buat ambil semua foto atau video work exp sesuai product ID",
+        responses = [
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. possible message:\n " +
+                        "1. photos with work exp id <workExpId> not exist\n " +
+                        "2. No photo found for product id <idWorkExp>",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Photos retrieved successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = BaseResponseWithListWorkExpPhotoResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun getWorkExpPhoto(@Parameter(description = "id work exp yang ingin diambil datanya", required = true) @PathVariable("workExpId") workExpId: Int): ResponseEntity<BaseResponse<List<WorkExpPhotoResponse>>> {
         val photo = workExpRepository.findById(workExpId)
         if (photo.isEmpty) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -59,13 +137,54 @@ class WorkExpPhotoController(
     }
 
     @GetMapping("/loadPhotoOrVideo/{fileName:.+}")
-    @Operation(summary = "Load work exp Photo or video By fileName", description = "Load photo or video by file name")
-    fun loadPhoto(@PathVariable fileName: String): ResponseEntity<Any> {
+    @Operation(
+        summary = "Load work exp Photo or video By fileName",
+        description = "Load photo or video by file name"
+    )
+    fun loadPhoto(@Parameter(description = "fileName photo/video yang ingin di-load") @PathVariable fileName: String): ResponseEntity<Any> {
         return workExpPhotoService.loadPhoto(fileName)
     }
 
     @DeleteMapping("/deletePhoto/{idWorkExpPhoto}")
-    fun deleteWorkExpPhoto(@PathVariable idWorkExpPhoto: Int): ResponseEntity<BaseResponse<Any>>{
+    @Operation(
+        summary = "menghapus foto work exp",
+        description = "menghapus foto pada work exp berdasarkan dari id work exp photo",
+        responses = [
+            ApiResponse(
+                responseCode = "404",
+                description = "status = F. possible messages:\n " +
+                        "1. idWorkExpPhoto not found\n " +
+                        "2. File not found\n ",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "500",
+                description = "status = F. message = Failed to delete photo",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            ),
+            ApiResponse(
+                responseCode = "200",
+                description = "status = T. message = Photo deleted successfully",
+                content = [
+                    Content(
+                        mediaType = "application/json",
+                        schema = Schema(implementation = NullResponse::class)
+                    )
+                ]
+            )
+        ]
+    )
+    fun deleteWorkExpPhoto(@Parameter(description = "id work exp photo yang mau dihapus") @PathVariable idWorkExpPhoto: Int): ResponseEntity<BaseResponse<Any>>{
         val photo = workExpPhotoRepository.findById(idWorkExpPhoto)
         if(photo.isEmpty){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
