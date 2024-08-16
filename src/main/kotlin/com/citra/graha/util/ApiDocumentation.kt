@@ -144,5 +144,16 @@ object ApiDocumentation {
                 "serviceDescription" : "test description update"
             }
         """
+        const val ROLE_REQUEST_EXAMPLE = """
+            {
+                "roleName" : "testrole"
+            }
+        """
+        const val ROLE_UPDATE_REQUEST_EXAMPLE = """
+            {
+                "id": 1,
+                "roleName" : "testrole"
+            }
+        """
     }
 }
