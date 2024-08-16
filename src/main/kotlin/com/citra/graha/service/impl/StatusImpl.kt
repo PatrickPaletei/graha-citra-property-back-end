@@ -1,11 +1,9 @@
 package com.citra.graha.service.impl
 
 import com.citra.graha.dto.response.BaseResponse
-import com.citra.graha.dto.response.StatusResponse
 import com.citra.graha.entity.MstStatus
 import com.citra.graha.repository.StatusRepository
 import com.citra.graha.service.StatusService
-import org.springframework.data.jpa.domain.AbstractPersistable_.id
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
@@ -27,7 +25,7 @@ class StatusImpl(
         )
     }
 
-    override fun getAllStatus(): ResponseEntity<BaseResponse<List<StatusResponse>>> {
+    override fun getAllStatus(): ResponseEntity<BaseResponse<List<MstStatus>>> {
         val allStatus = statusRepository.findAll()
         if (allStatus.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
@@ -38,20 +36,20 @@ class StatusImpl(
                 )
             )
         }
-        val listStatus = mutableListOf<StatusResponse>()
-        allStatus.forEach {
-            listStatus.add(
-                StatusResponse(
-                    statusId = it.statusId!!,
-                    statusName = it.statusName
-                )
-            )
-        }
+//        val listStatus = mutableListOf<MstStatus>()
+//        allStatus.forEach {
+//            listStatus.add(
+//                MstStatus(
+//                    statusId = it.statusId!!,
+//                    statusName = it.statusName
+//                )
+//            )
+//        }
         return ResponseEntity.ok().body(
             BaseResponse(
                 status = "T",
                 message = "Get All Status success",
-                data = listStatus
+                data = allStatus
             )
         )
     }
